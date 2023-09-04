@@ -48,6 +48,16 @@ export const ghAuthHeader = (ghToken: string): Partial<AuthHeader> => ({
 });
 
 /**
+ * Colorizes text using ANSI escape codes.
+ *
+ * @param {string} text - The text to be colorized.
+ * @param {string} colorCode - The ANSI color code to apply to the text.
+ * @returns {string} - The colorized text.
+ */
+const colorize = (text: string, colorCode: string) =>
+  `\x1b[${colorCode}m${text}\x1b[0m`;
+
+/**
  *
  * @param data data from github
  * @returns parsed data for pushing to Notion
@@ -93,7 +103,28 @@ const fetchData = async (): Promise<Item[]> => {
 
 const App = async () => {
   let data = await fetchData();
-  console.log(data.length);
+  const counterMap = new Map<string, number>();
+  let sum = 0;
+
+  for (const element of data) {
+    if (counterMap.has(element.language)) {
+      counterMap.set(element.language, counterMap.get(element.language)! + 1);
+    } else {
+      counterMap.set(element.language, 1);
+    }
+    sum++;
+  }
+  counterMap.set("Total number", sum);
+  const sortedMap = new Map(
+    [...counterMap.entries()].sort((a, b) => b[1] - a[1])
+  );
+
+  for (const [element, count] of sortedMap.entries()) {
+    const percentage = ((count / sum) * 100).toFixed(2);
+    const formattedCount = colorize(count.toString(), "36"); // Cyan color
+    const formattedPercentage = colorize(`(${percentage}%)`, "35"); // Magenta color
+    console.log(`${element}: ${formattedCount} ${formattedPercentage}`);
+  }
 };
 
 App();

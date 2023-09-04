@@ -37,6 +37,7 @@ export interface Item {
   created_at: string;
   updated_at: string;
   pushed_at: string;
+  size: number;
 }
 
 /**

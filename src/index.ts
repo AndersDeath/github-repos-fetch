@@ -68,12 +68,13 @@ export const ghParseData = (data: Partial<{ items: Item[] }>): Item[] => {
     html_url: element.html_url,
     fork: element.fork,
     description: element.description,
-    language: element.language,
+    language: element.language || "Unknown",
     archived: element.archived,
     visibility: element.visibility,
     created_at: element.created_at,
     updated_at: element.updated_at,
     pushed_at: element.pushed_at,
+    size: element.size,
   }));
 };
 
@@ -105,8 +106,10 @@ const App = async () => {
   let data = await fetchData();
   const counterMap = new Map<string, number>();
   let sum = 0;
+  let size = 0;
 
   for (const element of data) {
+    size += element.size;
     if (counterMap.has(element.language)) {
       counterMap.set(element.language, counterMap.get(element.language)! + 1);
     } else {
@@ -114,17 +117,27 @@ const App = async () => {
     }
     sum++;
   }
-  counterMap.set("Total number", sum);
+  counterMap.set("Number of repositories", sum);
   const sortedMap = new Map(
     [...counterMap.entries()].sort((a, b) => b[1] - a[1])
   );
-
+  console.log(colorize("--------------", "36")); // Cyan color
   for (const [element, count] of sortedMap.entries()) {
     const percentage = ((count / sum) * 100).toFixed(2);
     const formattedCount = colorize(count.toString(), "36"); // Cyan color
-    const formattedPercentage = colorize(`(${percentage}%)`, "35"); // Magenta color
-    console.log(`${element}: ${formattedCount} ${formattedPercentage}`);
+
+    if (element === "Number of repositories") {
+      console.log(`${element}: ${formattedCount}`);
+      console.log(colorize("--------------", "36")); // Cyan color
+    } else {
+      const formattedPercentage = colorize(`(${percentage}%)`, "35"); // Magenta color
+      console.log(`${element}: ${formattedCount} ${formattedPercentage}`);
+    }
   }
+  console.log(colorize("--------------", "36")); // Cyan color
+  console.log(
+    `Total size: ${colorize(`${(size / 1024).toFixed(2) + " MB"}`, "35")}` // Magenta color
+  );
 };
 
 App();

@@ -3,51 +3,46 @@ import axios from "axios";
 import { AuthHeader, Item, UserQuery } from "./interfaces";
 
 /**
- * Request to Guthub
- * @param perPage repos per page
- * @param pageNumber number of page
- * @returns data from github
+ * Request data from GitHub.
+ * @param {number} perPage - Repositories per page
+ * @param {number} pageNumber - Page number
+ * @returns {Promise<{ count: number, items: Item[] }>} - Data from GitHub
  */
-export const getGithubData = async (
-  perPage: number,
-  pageNumber: number
-): Promise<any> => {
-  const res = await axios.get(
+export const getGithubData = async (perPage: number, pageNumber: number) => {
+  const { data } = await axios.get(
     ghUserQuery({
       username: process.env.GH_USERNAME,
-      perPage: perPage,
+      perPage,
       page: pageNumber,
     }),
     {
       headers: ghAuthHeader(process.env.GH_TOKEN),
     }
   );
+
   return {
-    count: res.data.total_count,
-    items: ghParseData(res.data),
+    count: data.total_count,
+    items: ghParseData(data),
   };
 };
 
 /**
- * Query's builder
- * @param param0 UserQuery
- * @returns url address for fetching data from github
+ * Build a GitHub API query URL.
+ * @param {UserQuery} param0 - UserQuery parameters
+ * @returns {string} - GitHub API query URL
  */
-export const ghUserQuery = ({ username, perPage, page }: UserQuery): string => {
-  return `https://api.github.com/search/repositories?q=user:${username}&per_page=${perPage}&page=${page}`;
-};
+export const ghUserQuery = ({ username, perPage, page }: UserQuery): string =>
+  `https://api.github.com/search/repositories?q=user:${username}&per_page=${perPage}&page=${page}`;
 
 /**
- *
- * @param ghToken Github auth token
- * @returns AuthHeader for request
+ * Create GitHub authorization headers.
+ * @param {string} ghToken - GitHub auth token
+ * @returns {Partial<AuthHeader>} - AuthHeader for the request
  */
-export const ghAuthHeader = (ghToken: string): Partial<AuthHeader> => {
-  return {
-    Authorization: `token ${ghToken}`,
-    accept: "application/vnd.github+json",
-  };
-};
+export const ghAuthHeader = (ghToken: string): Partial<AuthHeader> => ({
+  Authorization: `token ${ghToken}`,
+  accept: "application/vnd.github+json",
+});
 
 /**
  *
@@ -55,28 +50,24 @@ export const ghAuthHeader = (ghToken: string): Partial<AuthHeader> => {
  * @returns parsed data for pushing to Notion
  */
 export const ghParseData = (data: Partial<{ items: Item[] }>): Item[] => {
-  const box: Item[] = [];
-  data.items.forEach((element: Item) => {
-    box.push({
-      name: element.name,
-      html_url: element.html_url,
-      fork: element.fork,
-      description: element.description,
-      language: element.language,
-      archived: element.archived,
-      visibility: element.visibility,
-      created_at: element.created_at,
-      updated_at: element.updated_at,
-      pushed_at: element.pushed_at,
-    });
-  });
-  return box;
+  return data.items.map((element: Item) => ({
+    name: element.name,
+    html_url: element.html_url,
+    fork: element.fork,
+    description: element.description,
+    language: element.language,
+    archived: element.archived,
+    visibility: element.visibility,
+    created_at: element.created_at,
+    updated_at: element.updated_at,
+    pushed_at: element.pushed_at,
+  }));
 };
 
-const perPage: number = 20;
-let pageNumber: number = 1;
-
 const fetchData = async () => {
+  const perPage: number = 20;
+  let pageNumber: number = 1;
+
   try {
     const firstPageData = await getGithubData(perPage, pageNumber);
     const totalNumber: number = firstPageData.count;
@@ -91,15 +82,15 @@ const fetchData = async () => {
       data = data.concat(nextPageData.items);
     }
 
-    console.log("Total repositories:", data.length);
-
-    // You can iterate through data if needed
-    // data.forEach((element: Partial<Item>) => {
-    //   console.log(element);
-    // });
+    return data;
   } catch (error) {
     console.error("Error:", error);
   }
 };
 
-fetchData();
+const App = async () => {
+  let data = await fetchData();
+  console.log(data.length);
+};
+
+App();

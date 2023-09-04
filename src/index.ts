@@ -8,7 +8,10 @@ import { AuthHeader, Item, UserQuery } from "./interfaces";
  * @param {number} pageNumber - Page number
  * @returns {Promise<{ count: number, items: Item[] }>} - Data from GitHub
  */
-export const getGithubData = async (perPage: number, pageNumber: number) => {
+export const getGithubData = async (
+  perPage: number,
+  pageNumber: number
+): Promise<{ count: number; items: Item[] }> => {
   const { data } = await axios.get(
     ghUserQuery({
       username: process.env.GH_USERNAME,
@@ -64,7 +67,7 @@ export const ghParseData = (data: Partial<{ items: Item[] }>): Item[] => {
   }));
 };
 
-const fetchData = async () => {
+const fetchData = async (): Promise<Item[]> => {
   const perPage: number = 20;
   let pageNumber: number = 1;
 

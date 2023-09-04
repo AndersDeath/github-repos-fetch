@@ -1,4 +1,13 @@
-interface ghItem {
+/**
+ * AuthHeader interface
+ */
+export interface AuthHeader {
+  Authorization: string;
+  "Accept-Encoding": string;
+  accept: string;
+}
+
+export interface ghItem {
   name: string;
   html_url: string;
   fork: boolean;

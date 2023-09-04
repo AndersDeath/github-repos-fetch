@@ -1,40 +1,6 @@
 require("dotenv").config();
-
-/**
- * AuthHeader interface
- */
-export interface AuthHeader {
-  Authorization: string;
-  "Accept-Encoding": string;
-  accept: string;
-}
 import axios from "axios";
-import { Item, UserQuery } from "./interfaces";
-
-/**
- * Bunch of requests to Github
- * @param pageNumber number of page
- * @param totalNumber
- * @param perPage repos per page
- * @returns array with data from Github
- */
-export const getGithubDataGroup = async (
-  pageNumber: number,
-  totalNumber: number,
-  perPage: number
-) => {
-  const promises: Promise<any>[] = [];
-  let data: Item[] = [];
-  for (let index = pageNumber; index <= Math.ceil(totalNumber / 20); index++) {
-    promises.push(getGithubData(perPage, index));
-  }
-  return await Promise.all(promises).then((res) => {
-    res.forEach((q) => {
-      data = [...data, ...q.items];
-    });
-    return data;
-  });
-};
+import { AuthHeader, Item, UserQuery } from "./interfaces";
 
 /**
  * Request to Guthub

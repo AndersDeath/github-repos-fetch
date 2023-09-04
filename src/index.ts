@@ -78,6 +78,10 @@ export const ghParseData = (data: Partial<{ items: Item[] }>): Item[] => {
   }));
 };
 
+/**
+ * Fetches data from GitHub.
+ * @returns {Promise<Item[]>} - An array of repository data.
+ */
 const fetchData = async (): Promise<Item[]> => {
   const perPage: number = 20;
   let pageNumber: number = 1;
@@ -99,12 +103,28 @@ const fetchData = async (): Promise<Item[]> => {
     return data;
   } catch (error) {
     console.error("Error:", error);
+    throw error;
   }
 };
 
-const App = async () => {
-  let data = await fetchData();
-  const counterMap = new Map<string, number>();
+/**
+ * Type definition for counting language occurrences.
+ */
+type LanguageCounts = Map<string, number>;
+
+/**
+ * Count occurrences of languages and calculate total size.
+ * @param {Item[]} data - An array of repository data.
+ * @returns {{counterMap: LanguageCounts; sum: number; size: number}} - An object containing counts, sum, and size.
+ */
+const countLanguagesAndSize = (
+  data: Item[]
+): {
+  counterMap: LanguageCounts;
+  sum: number;
+  size: number;
+} => {
+  const counterMap: LanguageCounts = new Map<string, number>();
   let sum = 0;
   let size = 0;
 
@@ -117,11 +137,33 @@ const App = async () => {
     }
     sum++;
   }
+
+  // Include the count of repositories in the map
   counterMap.set("Number of repositories", sum);
+
+  return { counterMap, sum, size };
+};
+
+/**
+ * Type definition for displaying results.
+ */
+type DisplayResultsParams = {
+  counterMap: LanguageCounts;
+  sum: number;
+  size: number;
+};
+
+/**
+ * Format and display the results.
+ * @param {DisplayResultsParams} params - Parameters for displaying results.
+ */
+const displayResults = ({ counterMap, sum, size }: DisplayResultsParams) => {
   const sortedMap = new Map(
     [...counterMap.entries()].sort((a, b) => b[1] - a[1])
   );
+
   console.log(colorize("--------------", "36")); // Cyan color
+
   for (const [element, count] of sortedMap.entries()) {
     const percentage = ((count / sum) * 100).toFixed(2);
     const formattedCount = colorize(count.toString(), "36"); // Cyan color
@@ -134,10 +176,24 @@ const App = async () => {
       console.log(`${element}: ${formattedCount} ${formattedPercentage}`);
     }
   }
+
   console.log(colorize("--------------", "36")); // Cyan color
   console.log(
     `Total size: ${colorize(`${(size / 1024).toFixed(2) + " MB"}`, "35")}` // Magenta color
   );
 };
 
-App();
+/**
+ * Main function to execute the program.
+ */
+const main = async () => {
+  try {
+    const data = await fetchData();
+    const { counterMap, sum, size } = countLanguagesAndSize(data);
+    displayResults({ counterMap, sum, size });
+  } catch (error) {
+    console.error("Error:", error);
+  }
+};
+
+main();

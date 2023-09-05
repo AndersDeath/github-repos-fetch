@@ -1,4 +1,4 @@
-import { express } from "express";
+import express from "express";
 import { countLanguagesAndSize, fetchData } from "./engine";
 import { DisplayResultsParams } from "./interfaces";
 

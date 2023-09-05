@@ -48,3 +48,17 @@ export interface UserQuery {
   perPage: number;
   page: number;
 }
+
+/**
+ * Type definition for counting language occurrences.
+ */
+export type LanguageCounts = Map<string, number>;
+
+/**
+ * Type definition for displaying results.
+ */
+export type DisplayResultsParams = {
+  counterMap: LanguageCounts;
+  sum: number;
+  size: number;
+};

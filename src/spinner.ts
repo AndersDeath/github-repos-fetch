@@ -1,5 +1,3 @@
-import { setTimeout } from 'timers/promises';
-
 export class Spinner {
   private spinnerChars = ['-', '\\', '|', '/'];
   private currentCharIndex = 0;

@@ -5,4 +5,4 @@ import { server } from "./server";
 
 main();
 
-server();
+// server();

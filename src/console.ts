@@ -1,5 +1,6 @@
 import { countLanguagesAndSize, fetchData } from "./engine";
 import { DisplayResultsParams } from "./interfaces";
+import { Spinner } from "./spinner";
 import { colorize } from "./utils";
 
 /**
@@ -40,12 +41,17 @@ export const displayResults = ({
  * Main function to execute the program.
  */
 export const main = async () => {
+  const spinner = new Spinner();
+  spinner.start();
+
   try {
     const data = await fetchData();
     const { counterMap, sum, size } = countLanguagesAndSize(data);
     displayResults({ counterMap, sum, size });
   } catch (error) {
     console.error("Error:", error);
+  } finally {
+    spinner.stop();
   }
 };
 

@@ -19,13 +19,14 @@ export class Spinner {
   private updateSpinner() {
     process.stdout.clearLine(0);
     process.stdout.cursorTo(0); 
-    process.stdout.write(`Downloading: ${this.spinnerChars[this.currentCharIndex]}`);
+    process.stdout.write(`Requesting github: ${this.spinnerChars[this.currentCharIndex]}`);
     this.currentCharIndex = (this.currentCharIndex + 1) % this.spinnerChars.length;
   }
 
   private clearSpinner() {
     process.stdout.clearLine(0); 
     process.stdout.cursorTo(0); 
+    process.stdout.write(`Finished \n\r`);
   }
 }
 

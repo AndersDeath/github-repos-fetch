@@ -46,13 +46,10 @@ export const main = async () => {
 
   try {
     const data = await fetchData();
+    spinner.stop();
     const { counterMap, sum, size } = countLanguagesAndSize(data);
     displayResults({ counterMap, sum, size });
   } catch (error) {
     console.error("Error:", error);
-  } finally {
-    spinner.stop();
   }
 };
-
-main();

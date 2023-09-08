@@ -15,24 +15,24 @@ export const displayResults = ({
     [...counterMap.entries()].sort((a, b) => b[1] - a[1])
   );
 
-  console.log(colorize("--------------", "36")); // Cyan color
+  console.log(colorize("--------------", "cyan"));
 
   for (const [element, count] of sortedMap.entries()) {
     const percentage = ((count / sum) * 100).toFixed(2);
-    const formattedCount = colorize(count.toString(), "36"); // Cyan color
+    const formattedCount = colorize(count.toString(), "cyan");
 
     if (element === "Number of repositories") {
       console.log(`${element}: ${formattedCount}`);
-      console.log(colorize("--------------", "36")); // Cyan color
+      console.log(colorize("--------------", "cyan"));
     } else {
-      const formattedPercentage = colorize(`(${percentage}%)`, "35"); // Magenta color
+      const formattedPercentage = colorize(`(${percentage}%)`, "magenta");
       console.log(`${element}: ${formattedCount} ${formattedPercentage}`);
     }
   }
 
-  console.log(colorize("--------------", "36")); // Cyan color
+  console.log(colorize("--------------", "cyan"));
   console.log(
-    `Total size: ${colorize(`${(size / 1024).toFixed(2) + " MB"}`, "35")}` // Magenta color
+    `Total size: ${colorize(`${(size / 1024).toFixed(2) + " MB"}`, "magenta")}`
   );
 };
 

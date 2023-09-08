@@ -122,7 +122,6 @@ export const countLanguagesAndSize = (
     sum++;
   }
 
-  // Include the count of repositories in the map
   counterMap.set("Number of repositories", sum);
 
   return { counterMap, sum, size };

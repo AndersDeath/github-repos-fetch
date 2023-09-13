@@ -27,7 +27,3 @@ export class Spinner {
     process.stdout.write(`Success \n\r`);
   }
 }
-
-(async () => {
- 
-})();
